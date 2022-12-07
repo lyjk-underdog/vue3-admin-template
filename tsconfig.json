@@ -1,11 +1,9 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
   "include": [
-    "env.d.ts",
     "src/**/*",
     "src/**/*.vue",
-    "types",
-    "mock"
+    "types"
   ],
   "compilerOptions": {
     "baseUrl": ".",

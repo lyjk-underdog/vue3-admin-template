@@ -1,5 +1,5 @@
 import 'vue-router';
-import type { IconClass } from '@/icons/svg/types';
+import type { IconClass } from '@/assets/icons/types';
 
 declare module 'vue-router' {
     interface RouteMeta {

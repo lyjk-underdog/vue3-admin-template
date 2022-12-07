@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 
-import './styles/index.scss' // 加载全局样式
+import '@/assets/styles/index.scss' // 加载全局样式
 
 import './permission';
 

@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import type * as SvgTypes from '@/icons/svg/types';
+import type * as SvgTypes from '@/assets/icons/types';
 
 export namespace Props {
     export type IconClass = SvgTypes.IconClass;

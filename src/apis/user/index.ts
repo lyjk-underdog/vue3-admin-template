@@ -1,17 +1,34 @@
-import service from '@/utils/request';
-import type { UserApi } from './types';
+import { request } from '@/utils/request';
 
-export const login: UserApi.Login.Fn = function (data) {
-    return service.request({
-        url: '/user/login',
-        method: 'post',
-        data
-    });
+// 用户登录
+export namespace Login {
+    type Token = string;
+
+    export type Req = {
+        username: string;
+        password: string;
+    }
+    export type Res = Token;
 }
 
-export const Info: UserApi.Info.Fn = function () {
-    return service.request({
+export function login(data: Login.Req) {
+    return request<Login.Res>({
+        url: '/user/login',
+        method: 'POST',
+        data
+    })
+}
+
+// 用户信息
+export namespace Info {
+    export type Res = {
+        name: string;
+        avatar: string;
+    }
+}
+export function info() {
+    return request<Info.Res>({
         url: '/user/info',
-        method: 'get'
+        method: 'GET'
     })
 }

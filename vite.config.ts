@@ -24,7 +24,7 @@ export default defineConfig(({ command }) => ({
       resolvers: [ElementPlusResolver()],
       dts: 'types/components.d.ts'
     }),
-    svgBuilder({ path: './src/icons/svg/', prefix: 'icon' }),
+    svgBuilder({ path: './src/assets/icons/', prefix: 'icon' }),
     viteMockServe({
       mockPath: 'mock',
       localEnabled: command === 'serve',

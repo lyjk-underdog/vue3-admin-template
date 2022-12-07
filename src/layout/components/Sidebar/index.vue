@@ -8,5 +8,6 @@
 <script setup lang="ts">
 import SidebarItemVue from './SidebarItem.vue';
 import { menuRoute } from '@/router';
-import variables from '@/styles/variables';
+import variables from '@/assets/styles/variables';
+
 </script>
