@@ -11,7 +11,8 @@ const useUserStore = defineStore('user', () => {
 
     async function login(req: UserApiType.Login.Req) {
         try {
-            const { data } = await userApi.login(req);
+            const res = await userApi.login(req);
+            const data = res.data!;
             token.value = data;
             setToken(data);
         } catch (err) {
@@ -21,7 +22,8 @@ const useUserStore = defineStore('user', () => {
 
     async function getInfo() {
         try {
-            const { data } = await userApi.info();
+            const res = await userApi.info();
+            const data = res.data!;
             name.value = data.name;
             avatar.value = data.avatar;
         } catch (err) {

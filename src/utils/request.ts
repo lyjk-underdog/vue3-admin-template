@@ -6,8 +6,21 @@ import useUserStore from '@/store/modules/user';
 export interface ResultData<T = any> {
     code: '200' | '402' | '500';
     message: string;
-    data: T;
+    data?: T;
 }
+
+// 分页请求
+export interface ReqPage {
+    pageNum: number;
+    pageSize: number;
+}
+
+// 分页响应 
+export interface ResPage<T> {
+    rows: T[];
+    total: number;
+}
+
 
 const service = axios.create({
     url: import.meta.env.VITE_BASE_URL,
