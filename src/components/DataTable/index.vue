@@ -1,81 +1,115 @@
 <template>
-    <div>
+    <div w:p="t-20px b-20px l-20px r-20px">
 
-        <!-- search -->
-        <FormRendererVue ref="searchFormRef" :fileds="[]" inline>
-            <template #footer>
-                <ElButton type="primary" :icon="Search" @click="">搜索</ElButton>
-                <ElButton :icon="Refresh" @click="">重置</ElButton>
-            </template>
-        </FormRendererVue>
+        <EditFormVue v-model:visible="editor.visible" :loading="editor.loading" :model="editor.model"
+            :fields="editor.fields" :mode="editor.mode" @submit="handleEdit" />
 
-        <ElTable w:m="b-10px" v-loading="table.loading" :data="table.list" @selection-change="">
-            <ElTableColumn type="selection" width="55" align="center" />
-            <ElTableColumn type="index" label="序号" align="center" :width="80" />
-            <ElTableColumn v-for="(column, index) of props.columns" :key="index" min-width="100" align="center"
-                :label="column.label" :prop="column.prop" :formatter="column.formatter" />
-            <ElTableColumn label="操作" align="center">
-                <template #default="{ row }">
-                    <slot name="operate" :row="row"></slot>
+        <SearchFormVue w:p="t-30px r-24px l-24px b-12px" w:m="b-16px" w:bg="white" :model="search.model"
+            :fields="search.fields" @search="table.getList" @reset="table.getList" />
 
-                    <ElButton type="primary" text :icon="Document" @click="">详情
+        <div w:bg="white" w:p="t-24px b-24px r-24px l-24px">
+            <ElRow w:m="b-10px" :gutter="10">
+                <ElCol :span="1.5">
+                    <ElButton v-if="props.hasNew" type="primary" plain :icon="Plus"
+                        @click="() => editor.open(Mode.Create)">新增
                     </ElButton>
-                    <ElButton type="primary" text :icon="Edit" @click="">修改
-                    </ElButton>
-                    <ElButton type="primary" text :icon="Delete" @click="">删除
-                    </ElButton>
-                </template>
-            </ElTableColumn>
-        </ElTable>
+                </ElCol>
+                <ElCol :span="1.5">
+                    <el-button v-if="props.hasDelete" type="danger" :disabled="!selection.isSelected" plain
+                        :icon="Delete" @click="() => handleDelete(selection.ids)">删除
+                    </el-button>
+                </ElCol>
+                <slot name="header" :selectedIds="selection.ids" :selection="selection.list"></slot>
+            </ElRow>
 
-        <ElPagination w:p="t-10px" background :page-sizes="[10, 20, 30]"
-            layout="total , sizes , prev, pager, next , jumper " :total="table.total"
-            v-model:page-size="pagination.pageSize" v-model:current-page="pagination.pageNum"
-            @current-change="table.getList" @size-change="table.getList" />
+            <ElTable w:m="b-10px" v-loading="table.loading" :data="table.list"
+                @selection-change="selection.selectionChange">
+                <ElTableColumn type="selection" width="55" align="center" />
+                <ElTableColumn type="index" label="序号" align="center" :width="80" />
+                <ElTableColumn v-for="(column, index) of props.columns" :key="index" min-width="100" align="center"
+                    :label="column.label" :prop="column.prop" :formatter="column.formatter" />
+                <ElTableColumn v-if="props.hasOperation" label="操作" align="center">
+                    <template #default="{ row }">
+                        <slot name="operate" :row="row"></slot>
+
+                        <ElButton v-if="props.hasView" type="primary" text :icon="Document"
+                            @click="() => editor.open(Mode.View, row)">详情
+                        </ElButton>
+                        <ElButton v-if="props.hasEdit" type="primary" text :icon="Edit"
+                            @click="() => editor.open(Mode.Update, row)">修改
+                        </ElButton>
+                        <ElButton v-if="props.hasDelete" type="primary" text :icon="Delete"
+                            @click="() => handleDelete(row)">删除
+                        </ElButton>
+                    </template>
+                </ElTableColumn>
+            </ElTable>
+
+            <ElPagination v-if="hasPagination" w:p="t-10px" background :page-sizes="[10, 20, 30]"
+                layout="total , sizes , prev, pager, next , jumper " :total="table.total"
+                v-model:page-size="pagination.pageSize" v-model:current-page="pagination.pageNum"
+                @current-change="table.getList" @size-change="table.getList" />
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import type { Field } from './FormRenderer.vue';
 import type { ResPage, ResultData } from '@/utils/request';
-import { Document, Edit, Delete, Search, Refresh } from '@element-plus/icons-vue';
+import { Document, Edit, Delete, Plus } from '@element-plus/icons-vue';
+import SearchFormVue from './SearchForm.vue';
+import EditFormVue, { Mode } from './EditForm.vue';
 import useTable from './useTable';
-import FormRendererVue from './FormRenderer.vue';
-import useSearch from "./useSearch"
+import useSearch from "./useSearch";
+import useEditor from './useEditor';
+import useSelection from './useSelection';
 
 export interface Column {
     label: string;
     prop: string;
     formatter?: (row: any) => JSX.Element;
-    search?: Pick<Field, 'type' | 'options' | 'attrs' | 'default' | 'rules'>
+    search?: Pick<Field, Exclude<keyof Field, 'label' | 'prop'>> & { default?: any }
 }
 
 export interface Apis {
     list: (params: any) => Promise<ResultData<ResPage<any>>>;
+    create?: (form: any) => Promise<ResultData<never>>;
+    read?: (id: string) => Promise<ResultData<any>>;
+    update?: (form: any) => Promise<ResultData<never>>;
+    remove?: (idOrIds: string | string[]) => Promise<ResultData<never>>;
 }
+
+export type EditFiled = Field & { default?: any };
 
 interface Props {
-    apis: Apis,
-    columns: Column[],
-    pageSize?: number
+    apis: Apis;
+    columns?: Column[];
+    pageSize?: number;
+    id?: string;
+    editFileds?: EditFiled[],
+    hasDelete?: boolean,
+    hasEdit?: boolean,
+    hasNew?: boolean,
+    hasView?: boolean,
+    hasOperation?: boolean,
+    hasPagination?: boolean,
 }
 const props = withDefaults(defineProps<Props>(), {
-    pageSize: 10
+    columns: () => [],
+    pageSize: 10,
+    id: 'id',
+    editFileds: () => [],
+    hasDelete: true,
+    hasEdit: true,
+    hasNew: true,
+    hasView: true,
+    hasOperation: true,
+    hasPagination: true,
 })
 
-const { searchFormRef } = useSearch()
+// search
+const search = useSearch(props.columns);
 
-
-// function useSearch() {
-
-//     const searchFormRef = ref<InstanceType<typeof FormRendererVue>>();
-//     const fields: Field[] = [];
-
-//     onBeforeMount(() => {
-
-//     })
-
-// }
 
 // pagination
 const pagination = reactive({
@@ -86,14 +120,42 @@ const pagination = reactive({
 // table
 const params = computed(() => {
     return {
-        ...pagination
+        ...(props.hasPagination ? pagination : {}),
+        ...search.model
     }
 })
 const table = useTable(props.apis, params);
+
+// selection
+const selection = useSelection(props.id);
+
+// editor
+const editor = useEditor(props.editFileds, props.apis, props.id);
+
+async function handleDelete(rowOrIds: Record<string, any> | string[]) {
+    try {
+        await editor.remove(rowOrIds);
+        table.getList();
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+async function handleEdit(done: () => void) {
+    try {
+        await editor.edit();
+        done();
+        table.getList();
+    } catch (e) {
+        console.error(e)
+    }
+}
 
 
 </script>
 
 <style scoped>
-
+:deep(.el-pagination) {
+    justify-content: center;
+}
 </style>

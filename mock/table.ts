@@ -114,4 +114,6 @@ const mocks: MockMethod[] = [
     }
 ]
 
+mocks.forEach(mock => mock.timeout = 800)
+
 export default mocks;
