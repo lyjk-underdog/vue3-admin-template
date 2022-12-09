@@ -1,6 +1,6 @@
 import type { MockMethod, Recordable } from 'vite-plugin-mock';
-import type { ResultData } from '../src/utils/request';
-import type { Item, ReqPage, ResPage } from '../src/apis/table';
+import type { ResultData, ResPage } from '../src/utils/request';
+import type { Item } from '../src/apis/table';
 
 type Opt = {
     url: string;
@@ -34,12 +34,17 @@ const mocks: MockMethod[] = [
         url: '/mock/table/data/list',
         method: 'get',
         response(opt: Opt): ResultData<ResPage<Item>> {
+
+            const { name } = opt.query;
+
+            const filterData = name == null ? data : data.filter(item => item.name.includes(name));
+
             return {
                 code: '200',
                 message: 'ok',
                 data: {
-                    rows: data,
-                    total: 100
+                    rows: filterData,
+                    total: filterData.length
                 }
             }
         }

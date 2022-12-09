@@ -10,9 +10,9 @@ function useTable(apis: Apis, params?: Ref<any>) {
     async function getList() {
         loading.value = true;
 
-        let { data } = await apis.list(params?.value);
-        list.value = data!.rows;
-        total.value = data!.total;
+        let { rows, total: t } = await apis.list(params?.value);
+        list.value = rows;
+        total.value = t;
 
         loading.value = false;
     }

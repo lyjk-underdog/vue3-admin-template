@@ -17,6 +17,12 @@
                     </ElOption>
                 </ElSelect>
             </template>
+
+            <!-- 自定义 -->
+            <template v-else>
+                <component :is="field.type" :model-value="getValue(field.prop)"
+                    @update:model-value="(newVal: any) => setValue(field.prop, newVal)" v-bind="field.attrs" />
+            </template>
         </ElFormItem>
 
         <ElFormItem v-if="$slots.footer">
@@ -50,31 +56,8 @@ const props = withDefaults(defineProps<Props>(), {
     disabled: false,
 })
 
-console.log(props);
-// 根据fields构建model
-// onBeforeMount(() => {
-//     let form: Record<string, any> = {};
-
-//     props.fileds.forEach((field) => {
-//         const segments = isArray(field.prop) ? field.prop : field.prop.split('.');
-
-//         segments.reduce((obj, segment, index) => {
-//             if (index === segments.length - 1) {
-//                 obj[segment] = field.default == null ? '' : field.default;
-//             } else {
-//                 obj[segment] || (obj[segment] = {})
-//             }
-
-//             return obj[segment]
-//         }, form)
-
-//     })
-
-//     model.value = form;
-// })
-
 // 获取model对应的prop值
-function getValue(prop: string | string[]) {
+function getValue(prop: string | string[]): any {
     const segments = Array.isArray(prop) ? prop : prop.split('.');
 
     return segments.reduce((obj, segment) => {

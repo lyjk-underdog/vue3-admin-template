@@ -20,13 +20,24 @@ export const menuRoute: customRouteRecordRaw = {
       }
     },
     {
-      path: 'about',
-      name: RouteRecordName.About,
-      component: () => import('@/views/About.vue'),
+      path: 'component',
+      name: RouteRecordName.Component,
+      redirect: { name: RouteRecordName.TableData },
       meta: {
-        title: '关于',
-        icon: 'menu'
-      }
+        title: '组件',
+        icon: 'component'
+      },
+      children: [
+        {
+          path: 'table-data',
+          name: RouteRecordName.TableData,
+          component: () => import('@/views/TableData.vue'),
+          meta: {
+            title: 'CRUD',
+            icon: 'table-data'
+          }
+        }
+      ]
     }
   ]
 }

@@ -1,5 +1,5 @@
 <template>
-    <div w:p="t-20px b-20px l-20px r-20px">
+    <div w:p="t-10px b-10px l-10px r-10px">
 
         <EditFormVue v-model:visible="editor.visible" :loading="editor.loading" :model="editor.model"
             :fields="editor.fields" :mode="editor.mode" @submit="handleEdit" />
@@ -27,7 +27,11 @@
                 <ElTableColumn type="selection" width="55" align="center" />
                 <ElTableColumn type="index" label="序号" align="center" :width="80" />
                 <ElTableColumn v-for="(column, index) of props.columns" :key="index" min-width="100" align="center"
-                    :label="column.label" :prop="column.prop" :formatter="column.formatter" />
+                    :label="column.label" :prop="column.prop" :formatter="column.formatter">
+                    <template #default="{ row }">
+                        {{ row[column.prop] == null ? '-' : row[column.prop] }}
+                    </template>
+                </ElTableColumn>
                 <ElTableColumn v-if="props.hasOperation" label="操作" align="center">
                     <template #default="{ row }">
                         <slot name="operate" :row="row"></slot>
@@ -53,16 +57,16 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import type { Field } from './FormRenderer.vue';
-import type { ResPage, ResultData } from '@/utils/request';
-import { Document, Edit, Delete, Plus } from '@element-plus/icons-vue';
-import SearchFormVue from './SearchForm.vue';
-import EditFormVue, { Mode } from './EditForm.vue';
-import useTable from './useTable';
-import useSearch from "./useSearch";
-import useEditor from './useEditor';
-import useSelection from './useSelection';
+<script lang="ts">
+interface ReqPage {
+    pageNum: number;
+    pageSize: number;
+}
+
+interface ResPage<T> {
+    rows: T[];
+    total: number;
+}
 
 export interface Column {
     label: string;
@@ -72,14 +76,25 @@ export interface Column {
 }
 
 export interface Apis {
-    list: (params: any) => Promise<ResultData<ResPage<any>>>;
-    create?: (form: any) => Promise<ResultData<never>>;
-    read?: (id: string) => Promise<ResultData<any>>;
-    update?: (form: any) => Promise<ResultData<never>>;
-    remove?: (idOrIds: string | string[]) => Promise<ResultData<never>>;
+    list: (params: ReqPage & Record<string, any>) => Promise<ResPage<any>>;
+    create?: (form: Record<string, any>) => Promise<any>;
+    read?: (id: string) => Promise<Record<string, any>>;
+    update?: (form: Record<string, any>) => Promise<any>;
+    remove?: (idOrIds: string | string[]) => Promise<any>;
 }
 
 export type EditFiled = Field & { default?: any };
+</script>
+
+<script setup lang="ts">
+import type { Field } from './FormRenderer.vue';
+import { Document, Edit, Delete, Plus } from '@element-plus/icons-vue';
+import SearchFormVue from './SearchForm.vue';
+import EditFormVue, { Mode } from './EditForm.vue';
+import useTable from './useTable';
+import useSearch from "./useSearch";
+import useEditor from './useEditor';
+import useSelection from './useSelection';
 
 interface Props {
     apis: Apis;
@@ -150,7 +165,6 @@ async function handleEdit(done: () => void) {
         console.error(e)
     }
 }
-
 
 </script>
 

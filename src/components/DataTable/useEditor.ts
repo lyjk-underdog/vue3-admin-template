@@ -1,6 +1,6 @@
 import useHint from './useHint';
 import type { Field } from './FormRenderer.vue';
-import type { Apis , EditFiled } from './index.vue';
+import type { Apis, EditFiled } from './index.vue';
 import { Mode } from './EditForm.vue';
 
 function useEditor(editFileds: EditFiled[], apis: Apis, id: string) {
@@ -57,7 +57,7 @@ function useEditor(editFileds: EditFiled[], apis: Apis, id: string) {
         if (m === Mode.Update || m === Mode.View) {
             loading.value = true;
 
-            let { data } = await apis.read!(row[id]);
+            let data = await apis.read!(row[id]);
             model.value = data;
 
             loading.value = false;

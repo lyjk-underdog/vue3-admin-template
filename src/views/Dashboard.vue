@@ -1,7 +1,5 @@
 <template>
-    <div>
-        Hello , {{userStore.name}}!
-    </div>
+    <div w:text="30px" w:font="bold">Hello , {{ userStore.name }}!</div>
 </template>
 
 <script setup lang="ts">

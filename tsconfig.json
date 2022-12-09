@@ -3,7 +3,8 @@
   "include": [
     "src/**/*",
     "src/**/*.vue",
-    "types"
+    "types",
+    "mock"
   ],
   "compilerOptions": {
     "baseUrl": ".",

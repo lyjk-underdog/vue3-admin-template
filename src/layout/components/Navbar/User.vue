@@ -1,9 +1,8 @@
 <template>
-
     <ElDropdown>
         <div class="c-navbar-user">
             <img class="c-navbar-user_avatar" :src="userStore.avatar">
-            <ElIcon>
+            <ElIcon w:align="self-end">
                 <CaretBottom />
             </ElIcon>
         </div>
@@ -35,6 +34,7 @@ function logout() {
 <style lang="scss" scoped>
 .c-navbar-user {
     cursor: pointer;
+    display: flex;
 
     &_avatar {
         width: 40px;

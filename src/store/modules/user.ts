@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import * as userApi from '@/apis/user';
-import type * as UserApiType from '@/apis/user';
+import type { LoginForm } from '@/apis/user';
 import { setToken, getToken, removeToken } from '@/utils/auth';
 
 const useUserStore = defineStore('user', () => {
@@ -9,7 +9,7 @@ const useUserStore = defineStore('user', () => {
     const name = ref('');
     const avatar = ref('');
 
-    async function login(req: UserApiType.Login.Req) {
+    async function login(req: LoginForm) {
         try {
             const res = await userApi.login(req);
             const data = res.data!;

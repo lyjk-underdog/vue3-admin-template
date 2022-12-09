@@ -5,7 +5,7 @@ function useSelection(id: string) {
     const isSelected = ref(false);
 
     const ids = computed(() => {
-        return list.value.map((item) => item[id])
+        return list.value.map((item) => item[id] as string)
     })
 
     function selectionChange(newSelection: any[]) {

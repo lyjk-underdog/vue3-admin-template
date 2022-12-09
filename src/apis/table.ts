@@ -10,7 +10,7 @@ export interface Item {
 
 // 获取列表
 export function list(params: ReqPage & Partial<Item>) {
-    return request<ResPage<ResPage<Item>>>({
+    return request<ResPage<Item>>({
         url: '/mock/table/data/list',
         method: 'get',
         params
@@ -19,7 +19,7 @@ export function list(params: ReqPage & Partial<Item>) {
 
 // 删除
 export function remove(idOrIds: string | string[]) {
-    return request<never>({
+    return request<void>({
         url: `/mock/table/data/${idOrIds}`,
         method: 'delete'
     })
@@ -35,7 +35,7 @@ export function info(id: string) {
 
 // 新增
 export function create(form: Pick<Item, Exclude<keyof Item, 'id'>>) {
-    return request<never>({
+    return request<void>({
         url: `/mock/table/data`,
         method: 'post',
         data: form
@@ -44,7 +44,7 @@ export function create(form: Pick<Item, Exclude<keyof Item, 'id'>>) {
 
 // 更新
 export function update(form: Item) {
-    return request<never>({
+    return request<void>({
         url: `/mock/table/data`,
         method: 'put',
         data: form

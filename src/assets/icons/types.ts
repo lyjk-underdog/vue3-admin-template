@@ -1,3 +1,5 @@
 export type IconClass =
     'dashboard' |
-    'menu' 
+    'menu' |
+    'table-data' |
+    'component'
